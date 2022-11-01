@@ -109,26 +109,6 @@ class EPOS4CommandMaker:
         intermediate_data = []
         final_data = []
 
-        # full_header_u16 = self._restore_word(op_code, number_of_words)
-        # data_for_crc = [full_header_u16] + [item.get() for item in data_list] + [0x0000]
-        # crc = self._calc_crc(data_for_crc)
-
-        # final_data = sync_bytes_int8 + self._stuffing_data(op_code) + self._stuffing_data(number_of_words)
-        #
-        # for bts in data_list:
-        #     if type(bts) == dt.WORD:
-        #         final_data += self._stuffing_data(self._low_byte(bts.get()))
-        #         final_data += self._stuffing_data(self._high_byte(bts.get()))
-        #     elif type(bts) == dt.DWORD:
-        #         byte_0_1 = self._low_bytes_32(bts.get())
-        #         byte_2_3 = self._high_bytes_32(bts.get())
-        #         final_data += self._stuffing_data(self._low_byte(byte_0_1))
-        #         final_data += self._stuffing_data(self._high_byte(byte_0_1))
-        #         final_data += self._stuffing_data(self._low_byte(byte_2_3))
-        #         final_data += self._stuffing_data(self._high_byte(byte_2_3))
-        #     else:  # if dt.BYTE type
-        #         final_data += self._stuffing_data(bts.get())
-
         intermediate_data += [op_code, number_of_words]
         for bts in data_list:
             if type(bts) == dt.WORD:
