@@ -1,8 +1,10 @@
-import EPOS4_Definitions as ed
-import datatypes as dt
+from EPOS4 import Definitions as df
+from EPOS4 import datatypes as dt
+
+# TODO: check all descriptions of methods
 
 
-class EPOS4:
+class EPOS4CommandMaker:
     def __init__(self, node_id):
         self._node_id = dt.BYTE(node_id)
         self._DLE = 0x90  # Data Link Escape
@@ -162,27 +164,38 @@ class EPOS4:
     def get_node_id(self) -> int:
         return self._node_id.get()
 
+    def send_controlword(self, controlword: int):
+        """
+        Send controlword;
+        :return: frame for sending to EPOS4
+        """
+        index = dt.WORD(df.INDEX_OM_SET_OPERATION_MODE)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        cw = dt.DWORD(controlword)
+        data_list = [self._node_id, index, sub_index, cw]
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
+
     # Operation Mode
     def get_operation_mode(self) -> bytearray:
         """
         Get target position
         :return: frame for sending to EPOS4
         """
-        index = dt.WORD(ed.OM_GET_OPERATION_MODE)
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_OM_GET_OPERATION_MODE)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
-        return self._make_frame(ed.READ_OPCODE, ed.READ_OPCODE_NoW, data_list)
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
 
     def set_operation_mode(self, operation_mode: int) -> bytearray:
         """
         Get target position
         :return: frame for sending to EPOS4
         """
-        index = dt.WORD(ed.OM_SET_OPERATION_MODE)
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_OM_SET_OPERATION_MODE)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         op_mode = dt.DWORD(operation_mode)
         data_list = [self._node_id, index, sub_index, op_mode]
-        return self._make_frame(ed.WRITE_OPCODE, ed.WRITE_OPCODE_NoW, data_list)
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     # Profile Position Mode
     def get_position_profile(self) -> bytearray:
@@ -190,10 +203,10 @@ class EPOS4:
         Get PPM
         :return: frame for sending to EPOS4
         """
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
-        index = dt.WORD(ed.PPM_PROFILE_VELOCITY)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_PPM_PROFILE_VELOCITY)
         data_list = [self._node_id, index, sub_index]
-        return self._make_frame(ed.READ_OPCODE, ed.READ_OPCODE_NoW, data_list)
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
 
     def set_position_profile_velocity(self, velocity: int) -> bytearray:
         """
@@ -201,11 +214,11 @@ class EPOS4:
         :param velocity: int32 value
         :return: frame for sending to EPOS4
         """
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
-        index = dt.WORD(ed.PPM_PROFILE_VELOCITY)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_PPM_PROFILE_VELOCITY)
         vel = dt.DWORD(velocity)
         data_list = [self._node_id, index, sub_index, vel]
-        return self._make_frame(ed.WRITE_OPCODE, ed.WRITE_OPCODE_NoW, data_list)
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def set_position_profile_acceleration(self, acceleration: int) -> bytearray:
         """
@@ -213,11 +226,11 @@ class EPOS4:
         :param acceleration: int32 value
         :return: frame for sending to EPOS4
         """
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
-        index = dt.WORD(ed.PPM_PROFILE_ACCELERATION)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_PPM_PROFILE_ACCELERATION)
         acc = dt.DWORD(acceleration)
         data_list = [self._node_id, index, sub_index, acc]
-        return self._make_frame(ed.WRITE_OPCODE, ed.WRITE_OPCODE_NoW, data_list)
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def set_position_profile_deceleration(self, deceleration: int) -> bytearray:
         """
@@ -225,24 +238,32 @@ class EPOS4:
         :param deceleration: int32 value
         :return: frame for sending to EPOS4
         """
-        index = dt.WORD(ed.PPM_PROFILE_DECELERATION)
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_PPM_PROFILE_DECELERATION)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         dec = dt.DWORD(deceleration)
         data_list = [self._node_id, index, sub_index, dec]
-        return self._make_frame(ed.WRITE_OPCODE, ed.WRITE_OPCODE_NoW, data_list)
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
-    def get_target_position(self):
+    def get_target_position(self) -> bytearray:
         """
         Get target position
         :return: frame for sending to EPOS4
         """
-        index = dt.WORD(ed.PPM_PROFILE_POSITION)
-        sub_index = dt.BYTE(ed.BLANK_SUBINDEX)
+        index = dt.WORD(df.INDEX_PPM_PROFILE_POSITION)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
-        return self._make_frame(ed.READ_OPCODE, ed.READ_OPCODE_NoW, data_list)
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
 
-    def move_to_position(self):
-        pass
+    def move_to_position(self, position: int) -> bytearray:
+        """
+        Move to position
+        :return: frame for sending to EPOS4
+        """
+        index = dt.WORD(df.INDEX_PPM_PROFILE_POSITION)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        pos = dt.DWORD(position)
+        data_list = [self._node_id, index, sub_index, pos]
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def halt_position_movement(self):
         pass
@@ -265,7 +286,15 @@ class EPOS4:
         pass
 
     def set_enable_state(self):
-        pass
+        """
+                Send controlword;
+                :return: frame for sending to EPOS4
+                """
+        index = dt.WORD(df.INDEX_CONTROLWORD)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        cw = dt.DWORD(0x06)
+        data_list = [self._node_id, index, sub_index, cw]
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def set_disable_state(self):
         pass
@@ -279,13 +308,3 @@ class EPOS4:
 
     def get_device_error_code(self):
         pass
-
-
-
-
-
-# e = EPOS4()
-# c = e.make_frame(0x60, [0xB001, 0x0030], 0x02)
-# for i in c:
-#     print(hex(i), end=", ")
-# e.send_frame(c)
