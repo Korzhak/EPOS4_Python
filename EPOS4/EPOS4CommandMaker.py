@@ -1,108 +1,17 @@
-from EPOS4 import Definitions as df
+from EPOS4 import definitions as df
 from EPOS4 import datatypes as dt
+from EPOS4.EPOS4Common import EPOS4Common
 
 # TODO: check all descriptions of methods
 
 
-class EPOS4CommandMaker:
+class EPOS4CommandMaker(EPOS4Common):
     def __init__(self, node_id):
+        super(EPOS4CommandMaker, self).__init__()
         self._node_id = dt.BYTE(node_id)
         self._DLE = 0x90  # Data Link Escape
         self._STX = 0x02  # Start of Text
         self._frame = b''
-
-    @staticmethod
-    def _low_byte(bts) -> int:
-        """
-        Separate two bytes of int 16 value;
-        :param bts: int16
-        :return: LSB int8
-        """
-        return bts & 0xFF
-
-    @staticmethod
-    def _high_byte(bts) -> int:
-        """
-        Separate two bytes of int 16 value;
-        :param bts: int16
-        :return: MSB int8
-        """
-        return (bts >> 8) & 0xFF
-
-    @staticmethod
-    def _low_bytes_32(bts) -> int:
-        """
-        Separate four bytes of int 32 value;
-        :param bts: int32
-        :return: LSB int16
-        """
-        return bts & 0xFFFF
-
-    @staticmethod
-    def _high_bytes_32(bts) -> int:
-        """
-        Separate four bytes of int 32 value;
-        :param bts: int32
-        :return: MSB int16
-        """
-        return (bts >> 16) & 0xFFFF
-
-    @staticmethod
-    def _restore_word(low_byte, high_byte) -> int:
-        """
-        Reverse process to _low_byte and _high_byte;
-        :param low_byte: returned value _low_byte()
-        :param high_byte: returned value _high_byte()
-        :return: Restored value of 2 bytes
-        """
-        return (high_byte << 8) | low_byte
-
-    @staticmethod
-    def _calc_crc(data_for_calc: list) -> int:
-        """
-        The 16-bit CRC checksum uses the algorithm CRC-CCITT.
-        For calculation, the 16-bit generator polynomial “x16+x12+x5+x0” is used.
-        The CRC is calculated before data stuffing and synchronization.
-        Add a CRC value of “0” (zero) for CRC calculation.
-        The data frame bytes must be calculated as a word;
-        :param data_for_calc: array of uint16 bytes with data + last one element is 0 for CRC calc.
-        :return: CRC in HEX format
-        """
-        crc = 0
-        for i in range(len(data_for_calc)):
-            shifter = 0x8000
-            _c = data_for_calc[i]
-            while shifter:
-                carry = crc & 0x8000
-                crc = (crc << 1) & 0xFFFF
-                if _c & shifter:
-                    crc += 1
-                if carry:
-                    crc ^= 0x1021
-                shifter >>= 1
-
-        return crc
-
-    @staticmethod
-    def _stuffing_data(byte: int) -> list:
-        if byte == 0x90:
-            return [0x90, 0x90]
-        return [byte]
-
-    def _parse_and_calc_crc(self, data: list) -> int:
-        """
-        Parse command frame to calculate CRC
-        :param data: command frame
-        :return: CRC
-        """
-        item = 0
-        data_for_calc = []
-        while item < len(data):
-            data_for_calc.append(self._restore_word(data[item], data[item+1]))
-            item += 2
-
-        data_for_calc.append(0x0000)  # last byte for CRC
-        return self._calc_crc(data_for_calc)
 
     def _make_frame(self, op_code: int, number_of_words: int, data_list: list,) -> bytearray:
         sync_bytes = [self._DLE, self._STX]
@@ -112,27 +21,27 @@ class EPOS4CommandMaker:
         intermediate_data += [op_code, number_of_words]
         for bts in data_list:
             if type(bts) == dt.WORD:
-                intermediate_data.append(self._low_byte(bts.get()))
-                intermediate_data.append(self._high_byte(bts.get()))
+                intermediate_data.append(self.low_byte(bts.get()))
+                intermediate_data.append(self.high_byte(bts.get()))
             elif type(bts) == dt.DWORD:
-                byte_0_1 = self._low_bytes_32(bts.get())
-                byte_2_3 = self._high_bytes_32(bts.get())
-                intermediate_data.append(self._low_byte(byte_0_1))
-                intermediate_data.append(self._high_byte(byte_0_1))
-                intermediate_data.append(self._low_byte(byte_2_3))
-                intermediate_data.append(self._high_byte(byte_2_3))
+                byte_0_1 = self.low_bytes_32(bts.get())
+                byte_2_3 = self.high_bytes_32(bts.get())
+                intermediate_data.append(self.low_byte(byte_0_1))
+                intermediate_data.append(self.high_byte(byte_0_1))
+                intermediate_data.append(self.low_byte(byte_2_3))
+                intermediate_data.append(self.high_byte(byte_2_3))
             else:  # if dt.BYTE type
                 intermediate_data.append(bts.get())
 
         # Calc CRC
-        crc = self._parse_and_calc_crc(intermediate_data)
+        crc = self.parse_and_calc_crc(intermediate_data)
 
         final_data += sync_bytes
         for byte in intermediate_data:
-            final_data += self._stuffing_data(byte)
+            final_data += self.stuffing_data(byte)
 
-        final_data += self._stuffing_data(self._low_byte(crc))
-        final_data += self._stuffing_data(self._high_byte(crc))
+        final_data += self.stuffing_data(self.low_byte(crc))
+        final_data += self.stuffing_data(self.high_byte(crc))
         self._frame = bytearray(final_data)
         return self._frame
         # return final_data
