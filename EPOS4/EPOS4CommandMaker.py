@@ -64,6 +64,16 @@ class EPOS4CommandMaker(EPOS4Common):
         data_list = [self._node_id, index, sub_index, cw]
         return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
+    def get_statusword(self) -> bytearray:
+        """
+        Get statusword;
+        :return: frame for sending to EPOS4
+        """
+        index = dt.WORD(df.INDEX_STATUSWORD)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
+
     # Operation Mode
     def get_operation_mode(self) -> bytearray:
         """

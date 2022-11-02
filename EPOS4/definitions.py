@@ -11,6 +11,7 @@ WRITE_OPCODE_NoW = 0x04
 # DOCS: Firmware Specification
 #       2.2.3, 15 pg.
 INDEX_CONTROLWORD = 0x6040
+INDEX_STATUSWORD = 0x6041
 
 # Operation Mode
 INDEX_OM_SET_OPERATION_MODE = 0x6060

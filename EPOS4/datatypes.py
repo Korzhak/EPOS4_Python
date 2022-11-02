@@ -74,22 +74,63 @@ class DWORD(WORD):
 
 
 class STATUS:
-    def __init__(self, status):
+    def __init__(self, status: int = 0,
+                 returned_error: DWORD = 0,
+                 returned_data: list = None,
+                 is_crc_ok: bool = None,
+                 frame: list = None):
         self._status = 0
-        self.set(status)
+        self._returned_error = DWORD()
+        self._returned_data = None
+        self._is_crc_ok = None
+        self._frame = None
 
-    def set(self, status):
+        self.set_status(status)
+        self.set_returned_error(returned_error)
+        self.set_returned_data(returned_data)
+        self.set_is_crc_ok(is_crc_ok)
+        self.set_frame(frame)
+
+    def set_status(self, status: int):
         # TODO: make checking status
         self._status = status
 
-    def get(self):
+    def get_status(self) -> int:
         return self._status
 
+    def set_returned_error(self, error: DWORD):
+        # TODO: make checking error
+        self._returned_error = error
+
+    def get_returned_error(self) -> DWORD:
+        return self._returned_error
+
+    def set_returned_data(self, data: list):
+        # TODO: make checking data
+        self._returned_data = data
+
+    def get_returned_data(self) -> list:
+        return self._returned_data
+
+    def set_is_crc_ok(self, is_crc_ok: bool):
+        self._is_crc_ok = is_crc_ok
+
+    def get_is_crc_ok(self) -> bool:
+        return self._is_crc_ok
+
+    def set_frame(self, frame: list):
+        self._frame = frame
+
+    def get_frame(self) -> list:
+        return self._frame
+
     def __eq__(self, other):
-        return self._status == other.get()
+        return self._status == other.get_status()
 
     def __str__(self):
         return str(self._status)
 
     def __repr__(self):
-        return str(self._status)
+        return f"(Status: {self._status}, Returned error: {hex(self._returned_error.get())}, " \
+               f"Returned data: {[hex(i.get()) for i in self._returned_data]}, Is CRC OK: {self._is_crc_ok}, " \
+               f"Frame: {[hex(i) for i in self._frame]})"

@@ -27,6 +27,7 @@ class EPOS4FeedbackParser(EPOS4Common):
         return int(header[2]), int(header[3])
 
     def read_obj_response(self, now: int, executed_opcode: int, header: bytes, frame: bytes) -> dt.STATUS:
+        status = dt.STATUS()
         if len(frame) != (now * 2 + 2):
             return ss.ERROR_NUMBER_OF_WORDS
 
@@ -47,35 +48,37 @@ class EPOS4FeedbackParser(EPOS4Common):
             pure_frame.append(i)
             preview_byte = i
 
+        status.set_frame(pure_frame)
+
         # Calculating CRC and checking it
         crc = self.parse_and_calc_crc(pure_frame[2:-2])
         if self.restore_word(pure_frame[-2], pure_frame[-1]) != crc:
-            return ss.ERROR_CRC
+            status.set_is_crc_ok(False)
+            status.set_status(ss.ERROR_CRC)
+            return status
 
-        print(f"CRC is OK: {hex(crc)}")
+        status.set_is_crc_ok(True)
 
         # Getting error code from response data
         error_code = dt.DWORD()
         error_code.set_from_reversed_bytes(frame[:4])
-        print(f"Error code: {error_code}")
 
-        print([hex(i) for i in pure_frame])
+        status.set_returned_error(error_code)
+
         if error_code:
-            # return error_code
-            print(f"Error code: {error_code}")
+            # TODO: checking error code
+            pass
 
         # Getting response data from frame
         bytes_array = []
         if executed_opcode == df.READ_OPCODE:
-
             bytes_array.append(dt.BYTE(pure_frame[-3]))
             bytes_array.append(dt.BYTE(pure_frame[-4]))
             bytes_array.append(dt.BYTE(pure_frame[-5]))
             bytes_array.append(dt.BYTE(pure_frame[-6]))
 
-            print(bytes_array)
-        # int_frame = []
-        # for i in range(4):
-        #     int_frame.append(int(frame[i]))
+            status.set_returned_data(bytes_array)
 
+        status.set_status(ss.OK)
+        return status
 

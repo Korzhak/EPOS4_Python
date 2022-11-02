@@ -1,9 +1,16 @@
 import serial
-# from EPOS4 import EPOS4CommandMaker
-# import time
+from EPOS4 import EPOS4
 
-ser = serial.Serial('COM35', 115200)
-ser.close()
+
+e = EPOS4('COM35')
+print("Get op mode:")
+print(repr(e.get_operation_mode()))
+print("-----------------")
+# e.set_operation_mode(df.OM_PPM)
+print("Get status word:")
+print(repr(e.get_statusword()))
+e.close()
+
 # epos4 = EPOS4CommandMaker.EPOS4CommandMaker(1)
 
 # frame = epos4.set_operation_mode(0x01)
