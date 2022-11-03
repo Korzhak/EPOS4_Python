@@ -1,4 +1,6 @@
 import serial
+
+# TODO: make correct import
 from EPOS4 import definitions as df
 from EPOS4.EPOS4Common import EPOS4Common
 from EPOS4.EPOS4CommandMaker import EPOS4CommandMaker
@@ -13,6 +15,7 @@ class EPOS4:
 
     def _wait_feedback(self, executed_feedback):
         first_time = True
+        resp = None
         header = b''
         number_of_words = 0
         for i in range(1000):
@@ -28,7 +31,7 @@ class EPOS4:
                     frame = self.ser.read(number_of_words*2+2)
                     resp = self._feedback_parser.read_obj_response(number_of_words, executed_feedback, header, frame)
                     first_time = True
-                    return resp
+        return resp
 
     def get_statusword(self):
         cmd = self._command_maker.get_statusword()

@@ -131,6 +131,10 @@ class STATUS:
         return str(self._status)
 
     def __repr__(self):
+        if not self._returned_data:
+            self._returned_data = []
+        if not self._frame:
+            self._frame = []
         return f"(Status: {self._status}, Returned error: {hex(self._returned_error.get())}, " \
                f"Returned data: {[hex(i.get()) for i in self._returned_data]}, Is CRC OK: {self._is_crc_ok}, " \
                f"Frame: {[hex(i) for i in self._frame]})"
