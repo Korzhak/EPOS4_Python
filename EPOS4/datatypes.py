@@ -135,6 +135,8 @@ class STATUS:
             self._returned_data = []
         if not self._frame:
             self._frame = []
+        if type(self._returned_error) == int:
+            self._returned_error = DWORD(self._returned_error)
         return f"(Status: {self._status}, Returned error: {hex(self._returned_error.get())}, " \
                f"Returned data: {[hex(i.get()) for i in self._returned_data]}, Is CRC OK: {self._is_crc_ok}, " \
                f"Frame: {[hex(i) for i in self._frame]})"

@@ -2,6 +2,7 @@ from EPOS4 import datatypes as dt
 
 # Everything is OK
 OK = 0
+ERROR = 1
 
 # Header frame length must be 4 bytes
 ERROR_HEADER_LENGTH = 10

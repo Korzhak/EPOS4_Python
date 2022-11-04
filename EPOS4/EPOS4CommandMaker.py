@@ -58,7 +58,7 @@ class EPOS4CommandMaker(EPOS4Common):
         Send controlword;
         :return: frame for sending to EPOS4
         """
-        index = dt.WORD(df.INDEX_OM_SET_OPERATION_MODE)
+        index = dt.WORD(df.INDEX_CONTROLWORD)
         sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         cw = dt.DWORD(controlword)
         data_list = [self._node_id, index, sub_index, cw]
@@ -70,6 +70,16 @@ class EPOS4CommandMaker(EPOS4Common):
         :return: frame for sending to EPOS4
         """
         index = dt.WORD(df.INDEX_STATUSWORD)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
+
+    def get_controlword(self) -> bytearray:
+        """
+        TODO: write doc
+        :return:
+        """
+        index = dt.WORD(df.INDEX_CONTROLWORD)
         sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
         return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
@@ -183,17 +193,6 @@ class EPOS4CommandMaker(EPOS4Common):
 
     def clear_fault(self):
         pass
-
-    def set_enable_state(self):
-        """
-                Send controlword;
-                :return: frame for sending to EPOS4
-                """
-        index = dt.WORD(df.INDEX_CONTROLWORD)
-        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
-        cw = dt.DWORD(0x06)
-        data_list = [self._node_id, index, sub_index, cw]
-        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def set_disable_state(self):
         pass
