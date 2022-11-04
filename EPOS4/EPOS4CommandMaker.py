@@ -53,7 +53,7 @@ class EPOS4CommandMaker(EPOS4Common):
     def get_node_id(self) -> int:
         return self._node_id.get()
 
-    def send_controlword(self, controlword: int):
+    def send_controlword(self, controlword: int) -> bytearray:
         """
         Send controlword;
         :return: frame for sending to EPOS4
@@ -64,22 +64,22 @@ class EPOS4CommandMaker(EPOS4Common):
         data_list = [self._node_id, index, sub_index, cw]
         return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
-    def get_statusword(self) -> bytearray:
-        """
-        Get statusword;
-        :return: frame for sending to EPOS4
-        """
-        index = dt.WORD(df.INDEX_STATUSWORD)
-        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
-        data_list = [self._node_id, index, sub_index]
-        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
-
     def get_controlword(self) -> bytearray:
         """
         TODO: write doc
         :return:
         """
         index = dt.WORD(df.INDEX_CONTROLWORD)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
+
+    def get_statusword(self) -> bytearray:
+        """
+        Get statusword;
+        :return: frame for sending to EPOS4
+        """
+        index = dt.WORD(df.INDEX_STATUSWORD)
         sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
         return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
@@ -107,13 +107,13 @@ class EPOS4CommandMaker(EPOS4Common):
         return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     # Profile Position Mode
-    def get_position_profile(self) -> bytearray:
+    def get_position_profile_velocity(self) -> bytearray:
         """
         Get PPM
         :return: frame for sending to EPOS4
         """
-        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         index = dt.WORD(df.INDEX_PPM_PROFILE_VELOCITY)
+        sub_index = dt.BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
         return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
 

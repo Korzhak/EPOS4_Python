@@ -12,7 +12,7 @@ class EPOS4FeedbackParser(EPOS4Common):
         pass
 
     @staticmethod
-    def parse_header(header: bytes) -> len:
+    def parse_header(header: bytes) -> dt.STATUS:
         """
         Parser of header
         :param header: 4 bytes of header
@@ -20,11 +20,13 @@ class EPOS4FeedbackParser(EPOS4Common):
         """
         # TODO: return status
         if len(header) != 4:
-            raise Exception("Header frame length must be 4 bytes")
+            return dt.STATUS(ss.ERROR_HEADER_LENGTH)
         elif int(header[0]) != 0x90 and int(header[1]) != 0x02:
-            raise Exception("Didn't receive start of frame")
+            return dt.STATUS(ss.ERROR_START_OF_FRAME)
         # elif int(header[2]) == 0x00:
-        return int(header[2]), int(header[3])
+        status = dt.STATUS(ss.OK)
+        status.set_data_from_bytes(header)
+        return status
 
     def read_obj_response(self, now: int, executed_opcode: int, header: bytes, frame: bytes) -> dt.STATUS:
         status = dt.STATUS()

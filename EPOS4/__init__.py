@@ -19,15 +19,16 @@ class EPOS4:
         first_time = True
         resp = None
         header = b''
-        number_of_words = 0
+        status = dt.STATUS()
         for i in range(1000):
             b = self.ser.inWaiting()
             if b:
                 if first_time:
                     header = self.ser.read(4)
-                    op_code, number_of_words = self._feedback_parser.parse_header(header)
+                    status = self._feedback_parser.parse_header(header)
                     first_time = False
                 else:
+                    number_of_words = status.get_returned_data()[3].get()
                     # NoW - count of int16 values, but we received int8, so NoW must be multiplied by 2.
                     # And +2 it is CRC bytes
                     frame = self.ser.read(number_of_words*2+2)

@@ -10,7 +10,7 @@ class BYTE:
         self.set(val)
 
     def set(self, val):
-        self._val = val & 0xFF
+        self._val = int(val) & 0xFF
 
     def set_from_reversed_bytes(self, frame: bytes):
         if len(frame) != self._len_of_bytes:
@@ -26,7 +26,7 @@ class BYTE:
         return str(self._val)
 
     def __repr__(self):
-        return str(self._val)
+        return hex(self._val)
 
 
 class WORD(BYTE):
@@ -73,12 +73,41 @@ class DWORD(WORD):
         self.set(bts)
 
 
+class ListOfBytes(list):
+    def __init__(self):
+        super(ListOfBytes, self).__init__()
+
+    def append(self, item) -> None:
+        if isinstance(item, BYTE):
+            super(ListOfBytes, self).append(item)
+        else:
+            raise ValueError('BYTE allowed only')
+
+    def insert(self, index, item):
+        if isinstance(item, BYTE):
+            super(ListOfBytes, self).insert(index, item)
+        else:
+            raise ValueError('BYTE allowed only')
+
+    def __add__(self, item):
+        if isinstance(item, ListOfBytes):
+            super(ListOfBytes, self).__add__(item)
+        else:
+            raise ValueError('BYTE allowed only')
+
+    def __iadd__(self, item):
+        if isinstance(item, ListOfBytes):
+            super(ListOfBytes, self).__iadd__(item)
+        else:
+            raise ValueError('BYTE allowed only')
+
+
 class STATUS:
     def __init__(self, status: int = 0,
                  returned_error: DWORD = 0,
-                 returned_data: list = None,
+                 returned_data: ListOfBytes = None,
                  is_crc_ok: bool = None,
-                 frame: list = None):
+                 frame: ListOfBytes = None):
         self._status = 0
         self._returned_error = DWORD()
         self._returned_data = None
@@ -105,11 +134,11 @@ class STATUS:
     def get_returned_error(self) -> DWORD:
         return self._returned_error
 
-    def set_returned_data(self, data: list):
+    def set_returned_data(self, data: ListOfBytes):
         # TODO: make checking data
         self._returned_data = data
 
-    def get_returned_data(self) -> list:
+    def get_returned_data(self) -> ListOfBytes:
         return self._returned_data
 
     def set_is_crc_ok(self, is_crc_ok: bool):
@@ -118,11 +147,17 @@ class STATUS:
     def get_is_crc_ok(self) -> bool:
         return self._is_crc_ok
 
-    def set_frame(self, frame: list):
+    def set_frame(self, frame: ListOfBytes):
         self._frame = frame
 
-    def get_frame(self) -> list:
+    def get_frame(self) -> ListOfBytes:
         return self._frame
+
+    def set_data_from_bytes(self, bts: bytes):
+        lob = ListOfBytes()
+        for i in bts:
+            lob.append(BYTE(i))
+        self.set_returned_data(lob)
 
     def __eq__(self, other):
         return self._status == other.get_status()
@@ -135,8 +170,6 @@ class STATUS:
             self._returned_data = []
         if not self._frame:
             self._frame = []
-        if type(self._returned_error) == int:
-            self._returned_error = DWORD(self._returned_error)
-        return f"(Status: {self._status}, Returned error: {hex(self._returned_error.get())}, " \
+        return f"(Status: {self._status}, Returned error: {repr(self._returned_error)}, " \
                f"Returned data: {[hex(i.get()) for i in self._returned_data]}, Is CRC OK: {self._is_crc_ok}, " \
                f"Frame: {[hex(i) for i in self._frame]})"

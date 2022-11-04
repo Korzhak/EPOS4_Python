@@ -24,8 +24,8 @@ print(repr(e.get_statusword()))
 # print("-----------------")
 # print("Set enable state:")
 # print(repr(e.set_enable_state()))
-print("Set enable state:")
-print(repr(e.move_to_position(0xFF0F)))
+# print("Set enable state:")
+# print(repr(e.move_to_position(0xFF0F)))
 
 e.close()
 
