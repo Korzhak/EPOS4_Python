@@ -14,6 +14,11 @@ class Epos4:
         self._feedback_parser = Epos4FeedbackParser()
 
     def _wait_feedback(self, executed_opcode) -> dt.STATUS:
+        """
+        TODO: write description
+        :param executed_opcode:
+        :return:
+        """
         first_time = True
         resp = None
         header = b''

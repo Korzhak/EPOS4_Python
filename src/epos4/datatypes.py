@@ -60,54 +60,54 @@ class BYTE:
 
     def __rshift__(self, other):
         if isinstance(other, BYTE):
-            return self._val >> other._val
+            return BYTE(self._val >> other._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __rrshift__(self, other):
         if isinstance(other, BYTE):
-            return other._val >> self._val
+            return BYTE(other._val >> self._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __lshift__(self, other):
         if isinstance(other, BYTE):
-            return self._val << other._val
+            return BYTE(self._val << other._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __rlshift__(self, other):
         if isinstance(other, BYTE):
-            return other._val << self._val
+            return BYTE(other._val << self._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __or__(self, other):
         if isinstance(other, BYTE):
-            return self._val | other._val
+            return BYTE(self._val | other._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __ror__(self, other):
         if isinstance(other, BYTE):
-            return other._val | self._val
+            return BYTE(other._val | self._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __xor__(self, other):
         if isinstance(other, BYTE):
-            return self._val ^ other._val
+            return BYTE(self._val ^ other._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __rxor__(self, other):
         if isinstance(other, BYTE):
-            return other._val ^ self._val
+            return BYTE(other._val ^ self._val)
         else:
             raise ValueError("BYTE allowed only")
 
     def __invert__(self):
-        return ~self._val
+        return BYTE(~self._val)
 
     def __str__(self):
         return str(self._val)
@@ -136,6 +136,57 @@ class WORD(BYTE):
         bts |= 0x00FF & int(frame[0])
         self.set(bts)
 
+    def __rshift__(self, other):
+        if isinstance(other, WORD):
+            return WORD(self._val >> other._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __rrshift__(self, other):
+        if isinstance(other, WORD):
+            return WORD(other._val >> self._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __lshift__(self, other):
+        if isinstance(other, WORD):
+            return WORD(self._val << other._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __rlshift__(self, other):
+        if isinstance(other, WORD):
+            return WORD(other._val << self._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __or__(self, other):
+        if isinstance(other, WORD):
+            return WORD(self._val | other._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __ror__(self, other):
+        if isinstance(other, WORD):
+            return WORD(other._val | self._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __xor__(self, other):
+        if isinstance(other, WORD):
+            return WORD(self._val ^ other._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __rxor__(self, other):
+        if isinstance(other, WORD):
+            return WORD(other._val ^ self._val)
+        else:
+            raise ValueError("WORD allowed only")
+
+    def __invert__(self):
+        return WORD(~self._val)
+
 
 class DWORD(WORD):
     """
@@ -158,6 +209,57 @@ class DWORD(WORD):
         bts |= 0x0000FF00 & (int(frame[1]) << 8)
         bts |= 0x000000FF & int(frame[0])
         self.set(bts)
+
+    def __rshift__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(self._val >> other._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __rrshift__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(other._val >> self._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __lshift__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(self._val << other._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __rlshift__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(other._val << self._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __or__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(self._val | other._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __ror__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(other._val | self._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __xor__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(self._val ^ other._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __rxor__(self, other):
+        if isinstance(other, DWORD):
+            return DWORD(other._val ^ self._val)
+        else:
+            raise ValueError("DWORD allowed only")
+
+    def __invert__(self):
+        return DWORD(~self._val)
 
 
 class ListOfBytes(list):
@@ -187,6 +289,9 @@ class ListOfBytes(list):
             super(ListOfBytes, self).__iadd__(item)
         else:
             raise ValueError('BYTE allowed only')
+
+    def __repr__(self):
+        return f"{[hex(i.get()) for i in self]}"
 
 
 class STATUS:
@@ -222,8 +327,25 @@ class STATUS:
         return self._returned_error
 
     def set_returned_data(self, data: ListOfBytes):
-        # TODO: make checking data
-        self._returned_data = data
+        self._returned_data = ListOfBytes()
+        if isinstance(data, ListOfBytes):
+            self._returned_data = data
+        elif isinstance(data, list):
+            self.set_returned_data_from_list(data)
+        elif data is None:
+            self._returned_data = None
+        else:
+            raise ValueError("Returned data value type must be ListOfBytes or list")
+
+    def set_returned_data_from_list(self, data: list, reverse: bool = False):
+        self._returned_data = ListOfBytes()
+        if reverse:
+            data.reverse()
+        for i in data:
+            if type(i) == BYTE:
+                self._returned_data.append(i)
+            else:
+                self._returned_data.append(BYTE(i))
 
     def get_returned_data(self) -> ListOfBytes:
         return self._returned_data
@@ -235,7 +357,30 @@ class STATUS:
         return self._is_crc_ok
 
     def set_frame(self, frame: ListOfBytes):
-        self._frame = frame
+        if isinstance(frame, ListOfBytes):
+            self._frame = frame
+        elif isinstance(frame, list):
+            self.set_frame_from_list(frame)
+        elif frame is None:
+            self._frame = None
+        else:
+            raise ValueError("Frame value type must be ListOfBytes or list")
+
+    def set_frame_from_list(self, frame: list, reverse: bool = False):
+        """
+        TODO: make description of method
+        :param frame:
+        :param reverse:
+        :return:
+        """
+        self._frame = ListOfBytes()
+        if reverse:
+            frame.reverse()
+        for i in frame:
+            if type(i) == BYTE:
+                self._frame.append(i)
+            else:
+                self._frame.append(BYTE(i))
 
     def get_frame(self) -> ListOfBytes:
         return self._frame
@@ -254,9 +399,9 @@ class STATUS:
 
     def __repr__(self):
         if not self._returned_data:
-            self._returned_data = []
+            self._returned_data = ListOfBytes()
         if not self._frame:
-            self._frame = []
+            self._frame = ListOfBytes()
         return f"(Status: {self._status}, Returned error: {repr(self._returned_error)}, " \
-               f"Returned data: {[hex(i.get()) for i in self._returned_data]}, Is CRC OK: {self._is_crc_ok}, " \
-               f"Frame: {[hex(i) for i in self._frame]})"
+               f"Returned data: {repr(self._returned_data)}, Is CRC OK: {self._is_crc_ok}, " \
+               f"Frame: {repr(self._frame)})"

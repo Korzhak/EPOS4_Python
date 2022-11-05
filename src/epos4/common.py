@@ -51,9 +51,31 @@ class Epos4Common:
 
     @staticmethod
     def stuffing_data(byte: int) -> list:
+        """
+        Method for doubling items 0x90
+        :param byte: byte for checking
+        :return: list with doubled 0x90 item or with single any other item
+        """
         if byte == 0x90:
             return [0x90, 0x90]
         return [byte]
+
+    @staticmethod
+    def restuffing_data(frame: list) -> list:
+        """
+        Restuffing data (deleting doubled 0x90 items)
+        :param frame: list of bytes with doubled 0x90 items
+        :return: pure list without doubled items
+        """
+        a = 0
+        pure_frame = []
+        while a < len(frame):
+            pure_frame.append(frame[a])
+            if frame[a] == 0x90 and frame[a + 1] == 0x90:
+                a += 2
+            else:
+                a += 1
+        return pure_frame
 
     @staticmethod
     def calc_crc(data_for_calc: list) -> int:
