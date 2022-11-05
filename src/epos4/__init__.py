@@ -2,9 +2,9 @@ import serial
 from . import statuses as ss
 from . import datatypes as dt
 from . import definitions as df
-from .Common import Epos4Common
-from .CommandMaker import Epos4CommandMaker
-from .FeedbackParser import Epos4FeedbackParser
+from .common import Epos4Common
+from .command_maker import Epos4CommandMaker
+from .feedback_parser import Epos4FeedbackParser
 
 
 class Epos4:

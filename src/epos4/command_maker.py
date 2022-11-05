@@ -1,5 +1,5 @@
 from . import definitions as df
-from .Common import Epos4Common
+from .common import Epos4Common
 from .datatypes import (
     BYTE, WORD, DWORD
 )
@@ -115,6 +115,26 @@ class Epos4CommandMaker(Epos4Common):
         :return: frame for sending to EPOS4
         """
         index = WORD(df.INDEX_PPM_PROFILE_VELOCITY)
+        sub_index = BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
+
+    def get_position_profile_acceleration(self) -> bytes:
+        """
+        Get PPM
+        :return: frame for sending to EPOS4
+        """
+        index = WORD(df.INDEX_PPM_PROFILE_ACCELERATION)
+        sub_index = BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
+
+    def get_position_profile_deceleration(self) -> bytes:
+        """
+        Get PPM
+        :return: frame for sending to EPOS4
+        """
+        index = WORD(df.INDEX_PPM_PROFILE_DECELERATION)
         sub_index = BYTE(df.BLANK_SUBINDEX)
         data_list = [self._node_id, index, sub_index]
         return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)

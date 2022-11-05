@@ -1,7 +1,7 @@
 from . import datatypes as dt
 from . import definitions as df
 from . import statuses as ss
-from .Common import Epos4Common
+from .common import Epos4Common
 
 
 class Epos4FeedbackParser(Epos4Common):
