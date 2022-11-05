@@ -12,13 +12,6 @@ class BYTE:
     def set(self, val):
         self._val = int(val) & 0xFF
 
-    def set_from_reversed_bytes(self, frame: bytes):
-        if len(frame) != self._len_of_bytes:
-            raise Exception(f"Length of frame must be {self._len_of_bytes}")
-        bts = 0
-        bts |= 0xFF & int(frame[0])
-        self.set(bts)
-
     def get(self):
         return self._val
 
