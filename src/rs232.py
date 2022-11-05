@@ -20,10 +20,13 @@ print("-----------------")
 print("Get enable state:")
 print(e.get_enable_state())
 print("-----------------")
-# print("Set enable state:")
-# print(repr(e.set_enable_state()))
-# print("Set enable state:")
-# print(repr(e.move_to_position(0xFF0F)))
+print("Set enable state:")
+print(repr(e.set_enable_state()))   # <- Doesn't return filled status
+print("-----------------")
+print("Get enable state:")
+print(e.get_enable_state())
+print("Move to position:")
+print(repr(e.move_to_position(0xABCD)))  # <- Contains print inside method
 
 e.close()
 

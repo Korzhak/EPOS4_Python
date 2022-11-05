@@ -20,10 +20,11 @@ class Epos4:
         :return:
         """
         first_time = True
-        resp = None
+        resp = dt.STATUS(ss.ERROR)
         header = b''
         status = dt.STATUS()
-        for i in range(1000):
+        # TODO: change for..range
+        for i in range(2000):
             b = self.ser.inWaiting()
             if b:
                 if first_time:
