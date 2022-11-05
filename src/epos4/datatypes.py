@@ -22,6 +22,93 @@ class BYTE:
     def get(self):
         return self._val
 
+    def __eq__(self, other):
+        if isinstance(other, BYTE):
+            return self._val == other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __ge__(self, other):
+        if isinstance(other, BYTE):
+            return self._val >= other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __gt__(self, other):
+        if isinstance(other, BYTE):
+            return self._val > other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __le__(self, other):
+        if isinstance(other, BYTE):
+            return self._val <= other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __lt__(self, other):
+        if isinstance(other, BYTE):
+            return self._val < other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __ne__(self, other):
+        if isinstance(other, BYTE):
+            return self._val != other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __rshift__(self, other):
+        if isinstance(other, BYTE):
+            return self._val >> other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __rrshift__(self, other):
+        if isinstance(other, BYTE):
+            return other._val >> self._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __lshift__(self, other):
+        if isinstance(other, BYTE):
+            return self._val << other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __rlshift__(self, other):
+        if isinstance(other, BYTE):
+            return other._val << self._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __or__(self, other):
+        if isinstance(other, BYTE):
+            return self._val | other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __ror__(self, other):
+        if isinstance(other, BYTE):
+            return other._val | self._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __xor__(self, other):
+        if isinstance(other, BYTE):
+            return self._val ^ other._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __rxor__(self, other):
+        if isinstance(other, BYTE):
+            return other._val ^ self._val
+        else:
+            raise ValueError("BYTE allowed only")
+
+    def __invert__(self):
+        return ~self._val
+
     def __str__(self):
         return str(self._val)
 

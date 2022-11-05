@@ -1,5 +1,3 @@
-from EPOS4 import datatypes as dt
-
 # Everything is OK
 OK = 0
 ERROR = 1

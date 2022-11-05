@@ -1,12 +1,12 @@
-from EPOS4 import datatypes as dt
-from EPOS4 import definitions as df
-from EPOS4 import statuses as ss
-from EPOS4.EPOS4Common import EPOS4Common
+from . import datatypes as dt
+from . import definitions as df
+from . import statuses as ss
+from .Common import Epos4Common
 
 
-class EPOS4FeedbackParser(EPOS4Common):
+class Epos4FeedbackParser(Epos4Common):
     def __init__(self):
-        super(EPOS4FeedbackParser, self).__init__()
+        super(Epos4FeedbackParser, self).__init__()
 
     def error_check(self, error_dword: dt.DWORD):
         pass

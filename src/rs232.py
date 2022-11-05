@@ -1,9 +1,6 @@
-import serial
-from EPOS4 import EPOS4
-from EPOS4 import definitions as df
+from epos4 import Epos4
 
-
-e = EPOS4('COM35')
+e = Epos4('COM35')
 # print("Get op mode:")
 # print(repr(e.get_operation_mode()))
 # print("-----------------")

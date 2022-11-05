@@ -1,19 +1,17 @@
-import time
 import serial
-# TODO: make correct import
-from EPOS4 import statuses as ss
-from EPOS4 import datatypes as dt
-from EPOS4 import definitions as df
-from EPOS4.EPOS4Common import EPOS4Common
-from EPOS4.EPOS4CommandMaker import EPOS4CommandMaker
-from EPOS4.EPOS4FeedbackParser import EPOS4FeedbackParser
+from . import statuses as ss
+from . import datatypes as dt
+from . import definitions as df
+from .Common import Epos4Common
+from .CommandMaker import Epos4CommandMaker
+from .FeedbackParser import Epos4FeedbackParser
 
 
-class EPOS4:
+class Epos4:
     def __init__(self, com, baud_rate=115200, node_id=1):
         self.ser = serial.Serial(com, baud_rate)
-        self._command_maker = EPOS4CommandMaker(node_id)
-        self._feedback_parser = EPOS4FeedbackParser()
+        self._command_maker = Epos4CommandMaker(node_id)
+        self._feedback_parser = Epos4FeedbackParser()
 
     def _wait_feedback(self, executed_opcode) -> dt.STATUS:
         first_time = True

@@ -1,10 +1,10 @@
 
-class EPOS4Common:
+class Epos4Common:
     def __init__(self):
         pass
 
     @staticmethod
-    def low_byte(bts) -> int:
+    def low_byte(bts: int) -> int:
         """
         Separate two bytes of int 16 value;
         :param bts: int16
@@ -13,7 +13,7 @@ class EPOS4Common:
         return bts & 0xFF
 
     @staticmethod
-    def high_byte(bts) -> int:
+    def high_byte(bts: int) -> int:
         """
         Separate two bytes of int 16 value;
         :param bts: int16
@@ -22,7 +22,7 @@ class EPOS4Common:
         return (bts >> 8) & 0xFF
 
     @staticmethod
-    def low_bytes_32(bts) -> int:
+    def low_bytes_32(bts: int) -> int:
         """
         Separate four bytes of int 32 value;
         :param bts: int32
@@ -31,7 +31,7 @@ class EPOS4Common:
         return bts & 0xFFFF
 
     @staticmethod
-    def high_bytes_32(bts) -> int:
+    def high_bytes_32(bts: int) -> int:
         """
         Separate four bytes of int 32 value;
         :param bts: int32
@@ -40,7 +40,7 @@ class EPOS4Common:
         return (bts >> 16) & 0xFFFF
 
     @staticmethod
-    def restore_word(low_byte, high_byte) -> int:
+    def restore_word(low_byte: int, high_byte: int) -> int:
         """
         Reverse process to _low_byte and _high_byte;
         :param low_byte: returned value _low_byte()
