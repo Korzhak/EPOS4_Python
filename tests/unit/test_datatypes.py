@@ -1,5 +1,6 @@
 import unittest
-from src.epos4.datatypes import BYTE, WORD, DWORD, ListOfBytes
+from epos4.datatypes import BYTE
+
 
 # TODO: write unit tests for datatypes
 

@@ -1,5 +1,5 @@
 import unittest
-from src.epos4.common import Epos4Common
+from epos4 import Epos4Common
 
 
 class TestCrc(unittest.TestCase):

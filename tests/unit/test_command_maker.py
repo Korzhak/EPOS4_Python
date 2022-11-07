@@ -8,7 +8,7 @@
 """
 
 import unittest
-from src.epos4 import command_maker
+from epos4 import command_maker
 
 
 class TestCommandMaker(unittest.TestCase):
