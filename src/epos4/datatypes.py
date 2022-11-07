@@ -275,16 +275,51 @@ class ListOfBytes(list):
         if isinstance(item, ListOfBytes):
             super(ListOfBytes, self).__add__(item)
         else:
-            raise ValueError('BYTE allowed only')
+            raise ValueError('ListOfBytes allowed only')
 
     def __iadd__(self, item):
         if isinstance(item, ListOfBytes):
             super(ListOfBytes, self).__iadd__(item)
         else:
-            raise ValueError('BYTE allowed only')
+            raise ValueError('ListOfBytes allowed only')
 
     def __repr__(self):
         return f"{[hex(i.get()) for i in self]}"
+
+
+class ListOfStatuses(list):
+    def __init__(self):
+        super(ListOfStatuses, self).__init__()
+
+    def append(self, item) -> None:
+        if isinstance(item, STATUS):
+            super(ListOfStatuses, self).append(item)
+        else:
+            raise ValueError('STATUS allowed only')
+
+    def insert(self, index, item):
+        if isinstance(item, STATUS):
+            super(ListOfStatuses, self).insert(index, item)
+        else:
+            raise ValueError('STATUS allowed only')
+
+    def __add__(self, item):
+        if isinstance(item, ListOfStatuses):
+            super(ListOfStatuses, self).__add__(item)
+        else:
+            raise ValueError('ListOfStatuses allowed only')
+
+    def __iadd__(self, item):
+        if isinstance(item, ListOfStatuses):
+            super(ListOfStatuses, self).__iadd__(item)
+        else:
+            raise ValueError('ListOfStatuses allowed only')
+
+    def __str__(self):
+        return f"{[repr(i) for i in self]}"
+
+    def __repr__(self):
+        return f"{[repr(i) for i in self]}"
 
 
 class STATUS:

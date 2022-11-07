@@ -43,24 +43,36 @@ class Epos4:
     # Controlword and statusword methods
     def get_statusword(self) -> dt.STATUS:
         cmd = self._command_maker.get_statusword()
-        self.ser.write(cmd)
-        return self._wait_feedback(df.READ_OPCODE)
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.READ_OPCODE)
+        return status
 
     def get_controlword(self) -> dt.STATUS:
         cmd = self._command_maker.get_controlword()
-        self.ser.write(cmd)
-        return self._wait_feedback(df.READ_OPCODE)
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.READ_OPCODE)
+        return status
 
     # Operation mode methods
-    def get_operation_mode(self) -> dt.STATUS:
+    def get_operation_mode(self) -> dt.BYTE:
         cmd = self._command_maker.get_operation_mode()
-        self.ser.write(cmd)
-        return self._wait_feedback(df.READ_OPCODE)
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.READ_OPCODE)
+        return status.get_returned_data()[-1]
 
     def set_operation_mode(self, op_mode: int) -> dt.STATUS:
         cmd = self._command_maker.set_operation_mode(op_mode)
-        self.ser.write(cmd)
-        return self._wait_feedback(df.WRITE_OPCODE)
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.WRITE_OPCODE)
+        return status
 
     # PPM methods
     def get_position_profile(self):
@@ -72,44 +84,40 @@ class Epos4:
     def get_target_position(self):
         pass
 
-    def move_to_position(self, position: int) -> dt.STATUS:
+    def move_to_position(self, position: int) -> dt.ListOfStatuses:
+        list_of_statuses = dt.ListOfStatuses()
+
+        # Set position
+        status = dt.STATUS(ss.OK)
         cmd = self._command_maker.move_to_position(position)
-        self.ser.write(cmd)
-        status = self._wait_feedback(df.WRITE_OPCODE)
-        # if status.get_returned_error().get():
-        #     status.set_status(ss.ERROR)
-        #     return status
-        print(repr(status))
-        status = self.get_statusword()
-        ret_data = status.get_returned_data()
-        print(repr(status))
-        # if not (ret_data[2].get() == 0x04 and ret_data[3].get() == 0x37):
-        #     status.set_status(ss.ERROR)
-        #     return status
-        status = self.get_controlword()
-        ret_data = status.get_returned_data()
-        # if not (ret_data[3].get() == 0x0F):
-        #     status.set_status(ss.ERROR)
-        #     return status
-        print(repr(status))
-        cmd = self._command_maker.send_controlword(0x3F)
-        self.ser.write(cmd)
-        status = self._wait_feedback(df.WRITE_OPCODE)
-        # if status.get_returned_error().get():
-        #     status.set_status(ss.ERROR)
-        #     return status
-        status = self.get_statusword()
-        ret_data = status.get_returned_data()
-        # if not (ret_data[2].get() == 0x10 and ret_data[3].get() == 0x37):
-        #     status.set_status(ss.ERROR)
-        #     return status
-        cmd = self._command_maker.send_controlword(0x0F)
-        self.ser.write(cmd)
-        status = self._wait_feedback(df.WRITE_OPCODE)
-        # if status.get_returned_error().get():
-        #     status.set_status(ss.ERROR)
-        #     return status
-        return status
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.WRITE_OPCODE)
+        list_of_statuses.append(status)
+
+        # Read controlword
+        status_1 = self.get_controlword()
+        list_of_statuses.append(status_1)
+        # TODO: check the controlword
+
+        # Enable operation with new setpoint, immediately
+        status_2 = dt.STATUS()
+        cmd = self._command_maker.send_controlword(df.CW_SET_ENABLE_OP_IMMEDIATELY)
+        while not status_2.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_2 = self._wait_feedback(df.WRITE_OPCODE)
+        list_of_statuses.append(status_2)
+
+        # Enable operation
+        status_3 = dt.STATUS()
+        cmd = self._command_maker.send_controlword(df.CW_SET_ENABLE_OPERATIONS)
+        while not status_3.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_3 = self._wait_feedback(df.WRITE_OPCODE)
+
+        list_of_statuses.append(status_3)
+
+        return list_of_statuses
 
     def halt_position_movement(self):
         pass
@@ -121,32 +129,44 @@ class Epos4:
 
     def get_enable_state(self) -> bool:
         status = self.get_statusword()
-        return bool(status.get_returned_data()[-1].get() & df.SW_ENABLE_STATE_BITS)
+        d = status.get_returned_data()[-1].get()
+        if d & df.SW_ENABLE_STATE_BITS == df.SW_ENABLE_STATE_BITS:
+            return True
+        return False
 
-    def set_enable_state(self) -> dt.STATUS:
+    def set_enable_state(self) -> dt.ListOfStatuses:
+        list_of_statuses = dt.ListOfStatuses()
+        status = dt.STATUS(ss.OK)
+        list_of_statuses.append(status)
         if self.get_enable_state():
-            return dt.STATUS(ss.OK)
+            return list_of_statuses
+
+        # Enable voltage and quick stop
+        status_1 = dt.STATUS()
         cmd = self._command_maker.send_controlword(df.CW_SET_ENABLE_VOLT_AND_QUICK_STOP)
-        self.ser.write(cmd)
-        status = self._wait_feedback(df.WRITE_OPCODE)
-        # # TODO: check status
-        # # if not status.get_returned_error() == ss.OK:
-        # # TODO: status error
-        #     # pass
-        status = self.get_statusword()
-        # if not status.get_returned_data()[-1].get() == df.SW_READY_TO_SWITCH_ON:
-        #     # TODO: if statusword
-        #     pass
+        while not status_1.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_1 = self._wait_feedback(df.WRITE_OPCODE)
+        list_of_statuses.append(status_1)
+
+        # Set enable operations
+        status_2 = dt.STATUS()
         cmd = self._command_maker.send_controlword(df.CW_SET_ENABLE_OPERATIONS)
-        self.ser.write(cmd)
-        status = self._wait_feedback(df.WRITE_OPCODE)
+        while not status_2.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_2 = self._wait_feedback(df.WRITE_OPCODE)
+        list_of_statuses.append(status_2)
+
+        # Waiting while statusword match with 0x0437
+        status_3 = dt.STATUS()
         for i in range(20):
-            status = self.get_statusword()
-            ret_data = status.get_returned_data()
-            if ret_data[2].get() == 0x04 and ret_data[3].get() == 0x37:
+            status_3 = self.get_statusword()
+            ret_data = status_3.get_returned_data()
+            if ret_data[2].get() & 0x04 and ret_data[3].get() & 0x37:
                 break
-        #     # TODO: remove print
-        return status
+        list_of_statuses.append(status_3)
+
+        return list_of_statuses
 
     def close(self):
         self.ser.close()
