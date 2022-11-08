@@ -7,6 +7,8 @@ pygame.init()
 pygame.joystick.init()
 clock = pygame.time.Clock()
 
+preview_axis = 0
+
 e = Epos4('COM35')
 
 print("Set op mode")
@@ -39,22 +41,12 @@ while True:
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
-        name = joystick.get_name()
-        print(name)
-
         axes = joystick.get_numaxes()
 
         # for i in range(axes):
         axis = joystick.get_axis(3)
-            # print(axis)
-        print(e.move_to_position(int((axis*100 + 250) * 500)))
+        if axis != preview_axis:
+            print(e.move_to_position(int((axis*100 + 250) * 500)))
+        preview_axis = axis
 
     clock.tick(20)
-# print("Moving to position:")
-# for i in range(0xF, 0xFFFF, 0xFF):
-#     print(e.move_to_position(i))  # <- Contains print inside method
-#
-# print("Position has been reached")
-
-e.close()
-

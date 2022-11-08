@@ -125,7 +125,38 @@ class Epos4:
     # State machine
     def get_fault_state(self) -> bool:
         status = self.get_statusword()
-        return bool(status.get_returned_data()[-1].get() & df.SW_FAULT_BITS)
+        d = status.get_returned_data()[-1].get()
+        if d & df.SW_FAULT_BITS == df.SW_FAULT_BITS:
+            return True
+        return False
+
+    def clear_fault_state(self) -> dt.ListOfStatuses:
+        los = dt.ListOfStatuses()
+
+        # Delete Error
+        cmd = self._command_maker.delete_error()
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.WRITE_OPCODE)
+        los.append(status)
+
+        # Write 0 controlword
+        cmd = self._command_maker.send_controlword(0x0)
+        status_1 = dt.STATUS()
+        while not status_1.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_1 = self._wait_feedback(df.WRITE_OPCODE)
+        los.append(status_1)
+
+        # Clear fault state
+        cmd = self._command_maker.clear_fault()
+        status_2 = dt.STATUS()
+        while not status_2.get_is_crc_ok():
+            self.ser.write(cmd)
+            status_2 = self._wait_feedback(df.WRITE_OPCODE)
+        los.append(status_2)
+        return los
 
     def get_enable_state(self) -> bool:
         status = self.get_statusword()

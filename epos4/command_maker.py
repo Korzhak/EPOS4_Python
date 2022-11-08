@@ -213,8 +213,27 @@ class Epos4CommandMaker(Epos4Common):
     def get_fault_state(self):
         pass
 
+    def delete_error(self):
+        """
+        TODO: write doc
+        :return: frame for sending to EPOS4
+        """
+        index = WORD(df.INDEX_DELETE_ERROR)
+        sub_index = BYTE(df.BLANK_SUBINDEX)
+        data = DWORD(0)
+        data_list = [self._node_id, index, sub_index, data]
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
+
     def clear_fault(self):
-        pass
+        """
+        TODO: write doc
+        :return: frame for sending to EPOS4
+        """
+        index = WORD(df.INDEX_CONTROLWORD)
+        sub_index = BYTE(df.BLANK_SUBINDEX)
+        data = DWORD(df.CW_CLEAR_FAULT)
+        data_list = [self._node_id, index, sub_index, data]
+        return self._make_frame(df.WRITE_OPCODE, df.WRITE_OPCODE_NoW, data_list)
 
     def set_disable_state(self):
         pass
