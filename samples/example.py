@@ -1,7 +1,7 @@
 from epos4 import Epos4
 from epos4 import definitions as df
 
-e = Epos4('COM30')
+e = Epos4('COM3')
 
 
 def move(val):
