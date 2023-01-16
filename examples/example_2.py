@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+# Example 2. Looping movements Maxon EPOS4 through UART.
+# Operation mode: Profile Position Mode
+#  Date: 7.11.2022
+#  Author: Korzhak (GitHub)
+#  Ukraine
+#
+
 from epos4 import Epos4
 from epos4 import definitions as df
 
@@ -39,4 +47,3 @@ if __name__ == "__main__":
     # Closing connection
     except KeyboardInterrupt:
         e.close()
-

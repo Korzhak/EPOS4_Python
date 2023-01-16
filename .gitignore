@@ -185,3 +185,6 @@ fabric.properties
 
 # idea folder, uncomment if you don't need it
 # .idea
+
+with_joystick_2.py
+DO_NOT_COMMIT/
