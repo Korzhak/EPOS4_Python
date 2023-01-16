@@ -55,7 +55,7 @@ e.clear_fault_state()
 _After clearing `Fault state` you have to check `Enable state` again_
 
 ```python
-if e.get_enable_state():
+if not e.get_enable_state():
     e.set_enable_state()
 ```
 
