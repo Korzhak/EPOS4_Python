@@ -207,7 +207,14 @@ class Epos4CommandMaker(Epos4Common):
         pass
 
     def get_position_is(self):
-        pass
+        """
+        Get position is
+        :return: frame for sending to EPOS4
+        """
+        index = WORD(df.INDEX_MI_GET_POSITION_IS)
+        sub_index = BYTE(df.BLANK_SUBINDEX)
+        data_list = [self._node_id, index, sub_index]
+        return self._make_frame(df.READ_OPCODE, df.READ_OPCODE_NoW, data_list)
 
     # State Machine
     def get_fault_state(self):

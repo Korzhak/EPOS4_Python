@@ -199,5 +199,18 @@ class Epos4:
 
         return list_of_statuses
 
+    def get_position_is(self) -> int:
+        cmd = self._command_maker.get_position_is()
+        status = dt.STATUS()
+        while not status.get_is_crc_ok():
+            self.ser.write(cmd)
+            status = self._wait_feedback(df.READ_OPCODE)
+        list_of_bytes = status.get_returned_data()
+        position = list_of_bytes[0]
+        position = position << 8 | list_of_bytes[1]
+        position = position << 8 | list_of_bytes[2]
+        position = position << 8 | list_of_bytes[3]
+        return position
+
     def close(self):
         self.ser.close()

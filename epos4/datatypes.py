@@ -53,39 +53,51 @@ class BYTE:
 
     def __rshift__(self, other):
         if isinstance(other, BYTE):
-            return BYTE(self._val >> other._val)
+            return self._val >> other._val
+        elif isinstance(other, int):
+            return self._val >> other
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __rrshift__(self, other):
         if isinstance(other, BYTE):
-            return BYTE(other._val >> self._val)
+            return other._val >> self._val
+        elif isinstance(other, int):
+            return other >> self._val
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __lshift__(self, other):
         if isinstance(other, BYTE):
-            return BYTE(self._val << other._val)
+            return self._val << other._val
+        elif isinstance(other, int):
+            return self._val << other
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __rlshift__(self, other):
         if isinstance(other, BYTE):
-            return BYTE(other._val << self._val)
+            return other._val << self._val
+        elif isinstance(other, int):
+            return other << self._val
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __or__(self, other):
         if isinstance(other, BYTE):
             return BYTE(self._val | other._val)
+        elif isinstance(other, int):
+            return BYTE(self._val | other)
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __ror__(self, other):
         if isinstance(other, BYTE):
-            return BYTE(other._val | self._val)
+            return other._val | self._val
+        elif isinstance(other, int):
+            return other | self._val
         else:
-            raise ValueError("BYTE allowed only")
+            raise ValueError("BYTE or int allowed only")
 
     def __xor__(self, other):
         if isinstance(other, BYTE):
